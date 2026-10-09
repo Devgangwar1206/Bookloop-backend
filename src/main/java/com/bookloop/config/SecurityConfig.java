@@ -135,10 +135,13 @@ public class SecurityConfig {
                     ).permitAll()
                 
              // ---------------------------------------------
-                // CHAT HEALTH ONLY
+                // HEALTH ENDPOINTS (Keep-Alive for Render & Monitoring)
                 // ---------------------------------------------
 
                 .requestMatchers(
+                    "/health",
+                    "/api/health",
+                    "/api/v1/health",
                     "/api/chat/health"
                 )
                 .permitAll()
