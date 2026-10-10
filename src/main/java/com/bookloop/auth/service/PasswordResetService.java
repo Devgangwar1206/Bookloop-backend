@@ -3,9 +3,7 @@ package com.bookloop.auth.service;
 import java.time.LocalDateTime;
 import java.util.Random;
 
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.crypto.password.PasswordEncoder;
+ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +22,8 @@ public class PasswordResetService {
     private final UserRepository userRepository;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JavaMailSender mailSender;
+    private final BrevoEmailService brevoEmailService;
+
 
     @Transactional
     public void sendOtp(String email) {
@@ -56,26 +55,13 @@ public class PasswordResetService {
 
         passwordResetTokenRepository.save(resetToken);
 
-        // Send email
-        SimpleMailMessage message =
-                new SimpleMailMessage();
+        
 
-        message.setTo(user.getEmail());
-        message.setSubject("BookLoop Password Reset OTP");
-
-        message.setText(
-                "Hello " + user.getName() + ",\n\n"
-                + "Your BookLoop password reset OTP is: "
-                + otp
-                + "\n\n"
-                + "This OTP is valid for 10 minutes.\n\n"
-                + "If you did not request a password reset, "
-                + "please ignore this email.\n\n"
-                + "Regards,\n"
-                + "BookLoop Team"
-        );
-
-        mailSender.send(message);
+     // Send OTP through Brevo API
+        brevoEmailService.sendOtpEmail(
+                user.getEmail(),
+                user.getName(),
+                otp);
     }
 
 
